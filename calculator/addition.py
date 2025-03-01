@@ -1,5 +1,5 @@
 # main.py
-import addition  # Import the addition module
+import calculator.addition as addition  # Import the addition module
 
 print("Using addition")
 x = addition.add_two_numbers(1, 2)  # Use the function from the module
