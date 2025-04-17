@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Our chatbot powered by Django</title>
+    <!-- Styles -->
+    <link rel="stylesheet" type="text/css" href="/static/frontend/styles/style.css">
+    <!-- Load Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  </head>
+  <body>
+      <!-- Our main app -->
+      <div id="app">
+        <!-- Container for the chat -->
+        <div id="chat-container">
+          <!-- Title -->
+          <p class="title-text">RobotBot</p>
+          
+          <!-- For changing language -->
+          <!--<div id="chat-change-language">
+            <a v-on:click="changeLanguage('en')">English</a>
+            <a v-on:click="changeLanguage('fi')">Finnish</a>
+          </div>-->
+
+          <!-- Container for our chat messages -->
+          <div id="chat-messages-container">
+            <!-- Loop through all the chat messages -->
+            <div class="chat-message" v-for="message in chatmessages">
+              <!-- User avatar -->
+              <div class="chat-message-image">
+                <img v-if="message.fromUser" src="/static/frontend/images/robot1.png" />
+                <img v-else src="/static/frontend/images/robot2.png" />
+              </div>
+              <!-- Chat text -->
+              <div v-html="message.message" class="chat-message-text">
+                { message.message }
+              </div>
+            </div>
+          </div>
+          <!-- Area for sending new chat message -->
+          <div id="chat-textarea">
+            <input type="text" placeholder="Encode a Message" v-on:keyup.13="sendMessage" v-model="ourmessage" />
+            <input type="button" value="Send" v-on:click="sendMessage" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vue app -->
+    <script>
+      const myapp = new Vue({
+        // Bind Vue to #app
+        el: '#app',
+        // Fix in Django so that our Vue variables can be used with { variableName } inside HTML
+        delimiters: ['{', '}'],
+        // Our reactive variables
+        data: {
+          ourmessage: "", // Our own message, bound to textfield which you can use to type in message for the chatbot
+          //language: "en", // Language of our app
+          // Contains all the chat messages typed by the user and what chatbot
+          // sends back from the server
+          chatmessages: [
+            {
+              name: "Mr. Robot", // Name of the user
+              fromUser: false, // true if this message is from chatbot, false if from user
+              message: "Welcome!" // Text message
+            },
+          ],
+        },
+        mounted: function() {
+          try {
+            const _this = this;
+            fetch(window.location.origin +  '/server/get_first_message')
+              .then(response => response.json())
+              .then(data => {
+                console.log("Initial message:", data);
+                if (!data) { console.log("data was empty"); return; }
+                if (!data.message) { console.log("data.message was empty"); return; }
+                _this.chatmessages[0].message = data.message;
+              });
+          } catch(e) { console.log("Error getting initial message"); console.log(e); }
+        },
+        // Methods for Javascript event listeners
+        methods: {
+          // Send message to server
+          sendMessage: function() {
+            var message = this.ourmessage;  // Get our message from the textfield
+            this.sayMessage(message, true); // Add our own message to list of messages
+
+            // Call our server with GET parameter "message".
+            // We expect JSON data back with this kind of structure:
+            // { message: "Our chatbot response" }
+            fetch(window.location.origin +  '/server/get_chat_response?message=' + message)
+              .then(response => response.json())
+              .then(data => {
+                console.log(data);
+                this.sayMessage(data.message, false); // Add chatbot response that we get from the server to list of chat messages
+                this.ourmessage = ""; // Make the current textfield empty
+                // Fix to scroll down the list of chat messages
+                this.$nextTick(function() {
+                  var element = document.getElementById("chat-messages-container");
+                  element.scrollTop = element.scrollHeight;
+                });
+              });
+          },
+          // Adds given message to list of chat messages
+          sayMessage: function(message, fromUser) {
+            this.chatmessages.push({
+              name: fromUser ? "Me" : "Chatbot",
+              fromUser: fromUser,
+              message: message
+            });
+          },
+          // To change language
+          changeLanguage(language) {
+            this.language = language;
+          },
+        }
+      });
+    </script>
+  </body>
+</html>

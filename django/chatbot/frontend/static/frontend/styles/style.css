@@ -1,0 +1,86 @@
+body {
+  background-color: #CFD3FF;
+  font-family: "sans-serif";
+}
+
+#chat-container {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  margin: 30px;
+  color: #819DDA;
+}
+
+#chat-container p.title-text {
+  font-weight: bold;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+
+#chat-messages-container {
+  height: 500px;
+  overflow-y: scroll;
+}
+
+#chat-change-language {
+  margin-bottom: 30px;
+}
+
+#chat-change-language a {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+#chat-change-language a:hover {
+  cursor: pointer;
+}
+
+.chat-message {
+  transition: 0.5s all ease;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.chat-message-image {
+  flex-basis: 30px;
+}
+
+.chat-message-text {
+  flex-grow: 1;
+  margin-left: 20px;
+}
+
+.chat-message-text img {
+  max-width: 100%;
+}
+
+#chat-textarea {
+  margin-top: 30px;
+}
+
+#chat-textarea input {
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+#chat-textarea input[type="text"] {
+  width: 80%;
+  border: 0px;
+  padding: 15px;
+}
+
+#chat-textarea input[type="text"]::placeholder {
+  color: #819DDA;
+}
+
+#chat-textarea input[type="button"] {
+  border: 0px;
+  background: none;
+  font-weight: bold;
+  color: #819DDA;
+}
+
+#chat-textarea input[type="button"]:hover {
+  cursor: pointer;
+}
